@@ -1,3 +1,5 @@
+import { Play } from "lucide-react";
+
 interface UploadViewProps {
   courses: any[];
   resources: any[];

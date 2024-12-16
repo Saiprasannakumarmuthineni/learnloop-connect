@@ -1,14 +1,41 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/components/ui/use-toast";
 
 export const ChatView = () => {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      sender: "Sarah Chen",
+      text: "Hey! Did you check out the new Machine Learning course?",
+      isSent: false,
+    },
+    {
+      id: 2,
+      sender: "Me",
+      text: "Not yet! Is it the one from Stanford?",
+      isSent: true,
+    },
+  ]);
+  const { toast } = useToast();
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      console.log("Sending message:", message);
+      const newMessage = {
+        id: messages.length + 1,
+        sender: "Me",
+        text: message,
+        isSent: true,
+      };
+      setMessages([...messages, newMessage]);
       setMessage("");
+      toast({
+        description: "Message sent successfully!",
+        duration: 2000,
+      });
     }
   };
 
@@ -19,24 +46,38 @@ export const ChatView = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="flex items-start space-x-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
-          <div className="bg-gray-100 rounded-lg p-3 max-w-[80%]">
-            <p className="text-sm font-medium mb-1">Sarah Chen</p>
-            <p className="text-sm text-gray-700">
-              Hey! Did you check out the new Machine Learning course?
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-2 justify-end">
-          <div className="bg-blue-500 text-white rounded-lg p-3 max-w-[80%]">
-            <p className="text-sm">
-              Not yet! Is it the one from Stanford?
-            </p>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
-        </div>
+        <AnimatePresence>
+          {messages.map((msg) => (
+            <motion.div
+              key={msg.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`flex items-start space-x-2 ${
+                msg.isSent ? "justify-end" : ""
+              }`}
+            >
+              {!msg.isSent && (
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+              )}
+              <div
+                className={`rounded-lg p-3 max-w-[80%] ${
+                  msg.isSent
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
+                {!msg.isSent && (
+                  <p className="text-sm font-medium mb-1">{msg.sender}</p>
+                )}
+                <p className="text-sm">{msg.text}</p>
+              </div>
+              {msg.isSent && (
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       <form onSubmit={handleSend} className="p-4 border-t">
@@ -48,12 +89,13 @@ export const ChatView = () => {
             placeholder="Type a message..."
             className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
+          <motion.button
             type="submit"
+            whileTap={{ scale: 0.95 }}
             className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
           >
             <Send className="w-5 h-5" />
-          </button>
+          </motion.button>
         </div>
       </form>
     </div>

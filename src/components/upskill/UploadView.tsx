@@ -1,4 +1,5 @@
-import { Play } from "lucide-react";
+import { Play, Upload as UploadIcon } from "lucide-react";
+import { useState } from "react";
 
 interface UploadViewProps {
   courses: any[];
@@ -6,8 +7,48 @@ interface UploadViewProps {
 }
 
 export const UploadView = ({ courses, resources }: UploadViewProps) => {
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      console.log("File dropped:", e.dataTransfer.files[0]);
+      // Handle file upload logic here
+    }
+  };
+
   return (
     <div className="space-y-12">
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Upload Content</h2>
+        <div
+          className={`border-2 border-dashed rounded-lg p-12 text-center ${
+            dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
+          <UploadIcon className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm text-gray-600">
+            Drag and drop your video here, or click to select a file
+          </p>
+        </div>
+      </section>
+
       <section>
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">
           Recommended Courses

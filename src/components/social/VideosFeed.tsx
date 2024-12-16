@@ -65,10 +65,10 @@ export const VideosFeed = () => {
   const { toast } = useToast();
 
   const handleReaction = (videoId: number, reactionType: string) => {
+    const videoReactions = userReactions[videoId] || [];
+    const hasReacted = videoReactions.includes(reactionType);
+    
     setUserReactions(prev => {
-      const videoReactions = prev[videoId] || [];
-      const hasReacted = videoReactions.includes(reactionType);
-      
       if (hasReacted) {
         return {
           ...prev,

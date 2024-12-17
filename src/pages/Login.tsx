@@ -47,7 +47,7 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-[#240a46] mb-2">Welcome Back</h1>
           <p className="text-[#5b1852] mb-2">Sign in to continue to your account</p>
           <p className="text-sm text-[#5b1852] opacity-75">
-            For development: Use any email and password
+            For development: Use any email and password to sign up first
           </p>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-sm">
@@ -66,13 +66,19 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/`}
-            showLinks={false}
-            view="sign_in"
+            showLinks={true}
+            view="sign_up"
             localization={{
               variables: {
+                sign_up: {
+                  email_label: 'Email (any)',
+                  password_label: 'Password (any)',
+                  button_label: 'Sign up',
+                },
                 sign_in: {
                   email_label: 'Email (any)',
                   password_label: 'Password (any)',
+                  button_label: 'Sign in',
                 }
               }
             }}

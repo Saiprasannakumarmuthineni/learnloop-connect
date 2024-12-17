@@ -68,6 +68,14 @@ const Login = () => {
             redirectTo={`${window.location.origin}/`}
             showLinks={false}
             view="sign_in"
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email (any)',
+                  password_label: 'Password (any)',
+                }
+              }
+            }}
           />
         </div>
       </div>

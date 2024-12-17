@@ -82,6 +82,12 @@ const Login = () => {
                 }
               }
             }}
+            options={{
+              emailRedirectTo: `${window.location.origin}/`,
+              data: {
+                username: 'user_' + Math.random().toString(36).slice(2, 7)
+              }
+            }}
           />
         </div>
       </div>

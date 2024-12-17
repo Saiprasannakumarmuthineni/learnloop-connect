@@ -3,7 +3,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,11 +27,6 @@ const Login = () => {
         toast({
           title: "Account updated",
           description: "Your account has been updated successfully.",
-        });
-      } else if (event === 'USER_DELETED') {
-        toast({
-          title: "Account deleted",
-          description: "Your account has been deleted successfully.",
         });
       } else if (event === 'PASSWORD_RECOVERY') {
         toast({
@@ -68,13 +63,6 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/`}
-            onError={(error) => {
-              toast({
-                variant: "destructive",
-                title: "Authentication Error",
-                description: error.message,
-              });
-            }}
           />
         </div>
       </div>

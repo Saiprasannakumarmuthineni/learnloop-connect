@@ -47,7 +47,7 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-[#240a46] mb-2">Welcome Back</h1>
           <p className="text-[#5b1852] mb-2">Sign in to continue to your account</p>
           <p className="text-sm text-[#5b1852] opacity-75">
-            Don't have an account? Use the Sign Up tab below
+            For development: Use any email and password
           </p>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-sm">
@@ -66,7 +66,6 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/`}
-            magicLink={true}
             showLinks={false}
             view="sign_in"
           />

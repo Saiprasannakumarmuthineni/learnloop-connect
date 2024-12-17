@@ -1,19 +1,49 @@
-import { Book, Briefcase, GraduationCap, Mail } from "lucide-react";
+import { Book, Briefcase, GraduationCap, Mail, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 export const ProfileView = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error signing out",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="p-4 max-w-2xl mx-auto">
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex items-center space-x-4 mb-6">
-          <div className="w-24 h-24 rounded-full bg-gray-200" />
-          <div>
-            <h3 className="font-medium text-xl">John Doe</h3>
-            <p className="text-gray-500">Computer Science Engineering</p>
-            <p className="text-sm text-gray-500 flex items-center mt-1">
-              <Mail className="w-4 h-4 mr-1" />
-              john.doe@college.edu
-            </p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-24 h-24 rounded-full bg-gray-200" />
+            <div>
+              <h3 className="font-medium text-xl">John Doe</h3>
+              <p className="text-gray-500">Computer Science Engineering</p>
+              <p className="text-sm text-gray-500 flex items-center mt-1">
+                <Mail className="w-4 h-4 mr-1" />
+                john.doe@college.edu
+              </p>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            className="text-[#93265f] hover:text-[#cb346c]"
+            onClick={handleLogout}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
 
         <div className="space-y-6">

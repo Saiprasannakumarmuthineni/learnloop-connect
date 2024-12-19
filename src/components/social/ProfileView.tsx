@@ -1,12 +1,16 @@
-import { Book, Briefcase, GraduationCap, Mail, LogOut } from "lucide-react";
+import { Book, Briefcase, GraduationCap, Mail, LogOut, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const ProfileView = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -21,12 +25,81 @@ export const ProfileView = () => {
     }
   };
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error('No user found');
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: filePath })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl);
+
+      toast({
+        title: "Success",
+        description: "Avatar updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="p-4 max-w-2xl mx-auto">
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
-            <div className="w-24 h-24 rounded-full bg-gray-200" />
+            <div className="relative group">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src={avatarUrl || undefined} />
+                <AvatarFallback className="bg-[#240a46] text-white text-xl">
+                  JD
+                </AvatarFallback>
+              </Avatar>
+              <label className="absolute bottom-0 right-0 p-1 bg-white rounded-full shadow-lg cursor-pointer group-hover:scale-110 transition-transform">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                  disabled={uploading}
+                />
+                <Upload className="w-4 h-4 text-gray-600" />
+              </label>
+            </div>
             <div>
               <h3 className="font-medium text-xl">John Doe</h3>
               <p className="text-gray-500">Computer Science Engineering</p>

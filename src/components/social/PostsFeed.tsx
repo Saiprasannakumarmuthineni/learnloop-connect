@@ -2,11 +2,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MessageSquare, Share2, ThumbsUp, Laugh, Star } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
 
 const posts = [
   {
     id: 1,
     author: "Sarah Chen",
+    authorId: "sarah-chen",
+    avatarUrl: "/sarah-chen-avatar.jpg",
     content: "Just finished my final project for Advanced Algorithms! Here's what I learned...",
     reactions: {
       like: 24,
@@ -27,6 +31,8 @@ const posts = [
   {
     id: 2,
     author: "Alex Kumar",
+    authorId: "alex-kumar",
+    avatarUrl: "/alex-kumar-avatar.jpg",
     content: "Looking for team members for the upcoming hackathon! We're focusing on AI/ML solutions.",
     reactions: {
       like: 45,
@@ -105,7 +111,12 @@ export const PostsFeed = () => {
             className="bg-white rounded-xl shadow-sm p-6 card-hover"
           >
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-[#240a46]" />
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={post.avatarUrl} />
+                <AvatarFallback className="bg-[#240a46] text-white">
+                  {post.author.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <h3 className="font-medium text-[#240a46]">{post.author}</h3>
                 <p className="text-sm text-[#5b1852]">{post.time}</p>

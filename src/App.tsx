@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Index from "./pages/Index";
+import { NotificationBell } from "./components/NotificationBell";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -12,6 +13,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <NotificationBell />
         <Toaster />
         <Sonner />
         <BrowserRouter>

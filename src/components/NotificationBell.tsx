@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,7 +20,7 @@ export const NotificationBell = () => {
         className="rounded-full hover:bg-gray-100"
         onClick={handleClick}
       >
-        <Bell className="h-6 w-6 text-gray-600" />
+        <BellRing className="h-6 w-6 text-gray-600 hover:text-gray-800 transition-colors" />
       </Button>
     </div>
   );

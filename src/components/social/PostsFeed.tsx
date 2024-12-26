@@ -10,6 +10,7 @@ const posts = [
     authorId: "sarah-chen",
     avatarUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     content: "Just finished my final project for Advanced Algorithms! Here's what I learned about optimizing graph traversal algorithms and their real-world applications in network routing. #ComputerScience #Algorithms",
+    imageUrl: "https://images.unsplash.com/photo-1516116216624-53e697fedbea",
     reactions: {
       like: 24,
       love: 15,

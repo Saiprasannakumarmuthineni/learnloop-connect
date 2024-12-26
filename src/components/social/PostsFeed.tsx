@@ -111,13 +111,20 @@ export const PostsFeed = () => {
   };
 
   return (
-    <div className="space-y-6 pb-20">
-      <CreatePostForm onPostCreated={handlePostCreated} />
-      <AnimatePresence>
-        {posts.map((post, index) => (
-          <Post key={post.id} post={post} />
-        ))}
-      </AnimatePresence>
+    <div className="relative min-h-screen pb-32">
+      <div className="space-y-6 mb-24">
+        <AnimatePresence>
+          {posts.map((post) => (
+            <Post key={post.id} post={post} />
+          ))}
+        </AnimatePresence>
+      </div>
+      
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t shadow-lg z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <CreatePostForm onPostCreated={handlePostCreated} />
+        </div>
+      </div>
     </div>
   );
 };

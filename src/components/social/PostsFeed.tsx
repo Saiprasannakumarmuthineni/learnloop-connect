@@ -2,6 +2,9 @@ import { AnimatePresence } from "framer-motion";
 import { Post } from "./Post";
 import { CreatePostForm } from "./CreatePostForm";
 import { useState } from "react";
+import { ChevronUp, Image } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 const posts = [
   {
@@ -105,6 +108,7 @@ const posts = [
 
 export const PostsFeed = () => {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const handlePostCreated = () => {
     setRefreshKey(prev => prev + 1);
@@ -121,8 +125,33 @@ export const PostsFeed = () => {
       </div>
       
       <div className="fixed bottom-16 left-0 right-0 bg-white border-t shadow-lg z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <CreatePostForm onPostCreated={handlePostCreated} />
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-end py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <ChevronUp className={`w-5 h-5 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
+            </Button>
+          </div>
+          
+          {isMinimized ? (
+            <div 
+              onClick={() => setIsMinimized(false)}
+              className="cursor-pointer mb-4"
+            >
+              <div className="flex items-center gap-2 p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                <Image className="w-5 h-5 text-gray-500" />
+                <span className="text-gray-500">Click to create a post...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="py-4">
+              <CreatePostForm onPostCreated={handlePostCreated} />
+            </div>
+          )}
         </div>
       </div>
     </div>

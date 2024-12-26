@@ -13,6 +13,7 @@ interface PostProps {
     authorId: string;
     avatarUrl: string;
     content: string;
+    imageUrl?: string;
     reactions: {
       like: number;
       love: number;
@@ -81,6 +82,16 @@ export const Post = ({ post }: PostProps) => {
       </div>
 
       <p className="text-[#240a46] mb-4">{post.content}</p>
+
+      {post.imageUrl && (
+        <div className="mb-4">
+          <img
+            src={post.imageUrl}
+            alt="Post content"
+            className="rounded-lg w-full object-cover max-h-[500px]"
+          />
+        </div>
+      )}
 
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-4">

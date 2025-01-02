@@ -1,9 +1,11 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Loader2, Send } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { MinimizedPostForm } from "./MinimizedPostForm";
+import { ImageUpload } from "./ImageUpload";
 
 interface CreatePostFormProps {
   isMinimized: boolean;
@@ -22,7 +24,6 @@ export const CreatePostForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,27 +116,12 @@ export const CreatePostForm = ({
 
   if (isMinimized) {
     return (
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 p-2">
-        <Textarea
-          placeholder="Share your thoughts..."
-          value={quickPostContent}
-          onChange={(e) => onQuickPostContentChange(e.target.value)}
-          className="min-h-[40px] resize-none"
-          rows={1}
-        />
-        <Button 
-          type="submit" 
-          size="icon"
-          disabled={isSubmitting || !quickPostContent.trim()}
-          className="bg-[#93265f] hover:bg-[#cb346c] text-white shrink-0"
-        >
-          {isSubmitting ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
-        </Button>
-      </form>
+      <MinimizedPostForm
+        content={quickPostContent}
+        isSubmitting={isSubmitting}
+        onContentChange={onQuickPostContentChange}
+        onSubmit={handleSubmit}
+      />
     );
   }
 
@@ -148,45 +134,16 @@ export const CreatePostForm = ({
         className="mb-4 min-h-[100px]"
       />
       
-      {imagePreview && (
-        <div className="relative">
-          <img 
-            src={imagePreview} 
-            alt="Preview" 
-            className="max-h-60 rounded-lg object-cover"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedImage(null);
-              setImagePreview(null);
-            }}
-            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-          >
-            ×
-          </button>
-        </div>
-      )}
+      <ImageUpload
+        onImageSelect={handleImageSelect}
+        imagePreview={imagePreview}
+        onImageRemove={() => {
+          setSelectedImage(null);
+          setImagePreview(null);
+        }}
+      />
 
-      <div className="flex justify-between items-center">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleImageSelect}
-          accept="image/*"
-          className="hidden"
-        />
-        
-        <Button 
-          type="button"
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-          className="text-[#93265f] border-[#93265f] hover:bg-[#93265f] hover:text-white"
-        >
-          <Image className="w-4 h-4 mr-2" />
-          Add Photo
-        </Button>
-
+      <div className="flex justify-end">
         <Button 
           type="submit" 
           disabled={isSubmitting || !content.trim()}

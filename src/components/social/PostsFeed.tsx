@@ -1,10 +1,9 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Post } from "./Post";
 import { CreatePostForm } from "./CreatePostForm";
-import { useState } from "react";
-import { ChevronUp, Image } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronUp, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 const posts = [
   {
@@ -110,10 +109,24 @@ export const PostsFeed = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isMinimized, setIsMinimized] = useState(true);
   const [quickPostContent, setQuickPostContent] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const threshold = window.innerHeight * 0.4; // 40% of viewport height
+      setIsScrolled(scrollPosition > threshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handlePostCreated = () => {
     setRefreshKey(prev => prev + 1);
     setQuickPostContent("");
+    setShowCreatePost(true);
   };
 
   return (
@@ -126,40 +139,72 @@ export const PostsFeed = () => {
         </AnimatePresence>
       </div>
       
-      <div className="fixed bottom-16 left-0 right-0 bg-white border-t shadow-lg z-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-end py-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMinimized(!isMinimized)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <ChevronUp className={`w-5 h-5 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
-            </Button>
-          </div>
-          
-          {isMinimized ? (
-            <div className="mb-4">
-              <CreatePostForm 
-                isMinimized={true} 
-                onPostCreated={handlePostCreated}
-                quickPostContent={quickPostContent}
-                onQuickPostContentChange={setQuickPostContent}
-              />
+      {isScrolled && !showCreatePost && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          className="fixed bottom-24 right-4 z-50"
+        >
+          <Button
+            size="icon"
+            className="rounded-full w-12 h-12 bg-[#93265f] hover:bg-[#cb346c] text-white shadow-lg"
+            onClick={() => setShowCreatePost(true)}
+          >
+            <Send className="w-6 h-6" />
+          </Button>
+        </motion.div>
+      )}
+
+      <AnimatePresence>
+        {showCreatePost && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-16 left-0 right-0 bg-white border-t shadow-lg z-40"
+          >
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex justify-end py-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (isScrolled) {
+                      setShowCreatePost(false);
+                    } else {
+                      setIsMinimized(!isMinimized);
+                    }
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <ChevronUp className={`w-5 h-5 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
+                </Button>
+              </div>
+              
+              {isMinimized ? (
+                <div className="mb-4">
+                  <CreatePostForm 
+                    isMinimized={true} 
+                    onPostCreated={handlePostCreated}
+                    quickPostContent={quickPostContent}
+                    onQuickPostContentChange={setQuickPostContent}
+                  />
+                </div>
+              ) : (
+                <div className="py-4">
+                  <CreatePostForm 
+                    isMinimized={false} 
+                    onPostCreated={handlePostCreated}
+                    quickPostContent={quickPostContent}
+                    onQuickPostContentChange={setQuickPostContent}
+                  />
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="py-4">
-              <CreatePostForm 
-                isMinimized={false} 
-                onPostCreated={handlePostCreated}
-                quickPostContent={quickPostContent}
-                onQuickPostContentChange={setQuickPostContent}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

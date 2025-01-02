@@ -3,9 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, Loader2 } from "lucide-react";
+import { Image, Loader2, Send } from "lucide-react";
 
-export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void }) => {
+interface CreatePostFormProps {
+  isMinimized: boolean;
+  onPostCreated: () => void;
+  quickPostContent: string;
+  onQuickPostContentChange: (content: string) => void;
+}
+
+export const CreatePostForm = ({ 
+  isMinimized, 
+  onPostCreated, 
+  quickPostContent, 
+  onQuickPostContentChange 
+}: CreatePostFormProps) => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -16,7 +28,7 @@ export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void })
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "Error",
           description: "Image must be less than 5MB",
@@ -50,7 +62,8 @@ export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    const postContent = isMinimized ? quickPostContent : content;
+    if (!postContent.trim()) return;
 
     setIsSubmitting(true);
     try {
@@ -72,7 +85,7 @@ export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void })
       const { error } = await supabase
         .from('posts')
         .insert([{ 
-          content, 
+          content: postContent, 
           user_id: user.id,
           image_url: imageUrl
         }]);
@@ -87,6 +100,7 @@ export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void })
       setContent("");
       setSelectedImage(null);
       setImagePreview(null);
+      onQuickPostContentChange("");
       onPostCreated();
     } catch (error) {
       toast({
@@ -98,6 +112,32 @@ export const CreatePostForm = ({ onPostCreated }: { onPostCreated: () => void })
       setIsSubmitting(false);
     }
   };
+
+  if (isMinimized) {
+    return (
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 p-2">
+        <Textarea
+          placeholder="Share your thoughts..."
+          value={quickPostContent}
+          onChange={(e) => onQuickPostContentChange(e.target.value)}
+          className="min-h-[40px] resize-none"
+          rows={1}
+        />
+        <Button 
+          type="submit" 
+          size="icon"
+          disabled={isSubmitting || !quickPostContent.trim()}
+          className="bg-[#93265f] hover:bg-[#cb346c] text-white shrink-0"
+        >
+          {isSubmitting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-4 h-4" />
+          )}
+        </Button>
+      </form>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 mb-6 space-y-4">

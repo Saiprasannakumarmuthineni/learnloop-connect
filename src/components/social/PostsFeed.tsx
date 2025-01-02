@@ -108,10 +108,12 @@ const posts = [
 
 export const PostsFeed = () => {
   const [refreshKey, setRefreshKey] = useState(0);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
+  const [quickPostContent, setQuickPostContent] = useState("");
 
   const handlePostCreated = () => {
     setRefreshKey(prev => prev + 1);
+    setQuickPostContent("");
   };
 
   return (
@@ -138,18 +140,22 @@ export const PostsFeed = () => {
           </div>
           
           {isMinimized ? (
-            <div 
-              onClick={() => setIsMinimized(false)}
-              className="cursor-pointer mb-4"
-            >
-              <div className="flex items-center gap-2 p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                <Image className="w-5 h-5 text-gray-500" />
-                <span className="text-gray-500">Click to create a post...</span>
-              </div>
+            <div className="mb-4">
+              <CreatePostForm 
+                isMinimized={true} 
+                onPostCreated={handlePostCreated}
+                quickPostContent={quickPostContent}
+                onQuickPostContentChange={setQuickPostContent}
+              />
             </div>
           ) : (
             <div className="py-4">
-              <CreatePostForm onPostCreated={handlePostCreated} />
+              <CreatePostForm 
+                isMinimized={false} 
+                onPostCreated={handlePostCreated}
+                quickPostContent={quickPostContent}
+                onQuickPostContentChange={setQuickPostContent}
+              />
             </div>
           )}
         </div>

@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Post } from "./Post";
 import { CreatePostForm } from "./CreatePostForm";
-import { useState, useEffect } from "react";
-import { ChevronUp, Send } from "lucide-react";
+import { useState } from "react";
+import { ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FloatingActionButton } from "./FloatingActionButton";
 
 const posts = [
   {
@@ -109,19 +110,7 @@ export const PostsFeed = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isMinimized, setIsMinimized] = useState(true);
   const [quickPostContent, setQuickPostContent] = useState("");
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showCreatePost, setShowCreatePost] = useState(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const threshold = window.innerHeight * 0.4; // 40% of viewport height
-      setIsScrolled(scrollPosition > threshold);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   const handlePostCreated = () => {
     setRefreshKey(prev => prev + 1);
@@ -139,21 +128,8 @@ export const PostsFeed = () => {
         </AnimatePresence>
       </div>
       
-      {isScrolled && !showCreatePost && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          className="fixed bottom-24 right-4 z-50"
-        >
-          <Button
-            size="icon"
-            className="rounded-full w-12 h-12 bg-[#93265f] hover:bg-[#cb346c] text-white shadow-lg"
-            onClick={() => setShowCreatePost(true)}
-          >
-            <Send className="w-6 h-6" />
-          </Button>
-        </motion.div>
+      {!showCreatePost && (
+        <FloatingActionButton onClick={() => setShowCreatePost(true)} />
       )}
 
       <AnimatePresence>
@@ -170,15 +146,12 @@ export const PostsFeed = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    if (isScrolled) {
-                      setShowCreatePost(false);
-                    } else {
-                      setIsMinimized(!isMinimized);
-                    }
+                    setShowCreatePost(false);
+                    setIsMinimized(true);
                   }}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <ChevronUp className={`w-5 h-5 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
+                  <ChevronUp className="w-5 h-5" />
                 </Button>
               </div>
               
